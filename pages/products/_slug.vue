@@ -40,8 +40,11 @@
                 </table>
               </div>
               <hr>
-              <button @click="addToCart(product.id, calculateDiscount(product), product.weight)" class="btn btn-lg btn-warning border-0 shadow-sm"><i class="fa fa-shopping-cart"></i> TAMBAH KE
-                KERANJANG</button>
+              <div class="d-flex">
+                <button @click="addToCart(product.id, calculateDiscount(product), product.weight)" class="btn btn-lg btn-warning border-0 shadow-sm mr-2"><i class="fa fa-shopping-cart"></i> TAMBAH KE
+                  KERANJANG</button>
+                <button @click="addToWishlist(product.id)" class="btn btn-lg btn-outline-danger border-0 shadow-sm"><i class="fa fa-heart"></i> WISHLIST</button>
+              </div>
             </div>
           </div>
         </div>
@@ -134,6 +137,42 @@
 
     //method
     methods: {
+
+      //method "addToWishlist"
+      async addToWishlist(productId) {
+        //check loggedIn "false"
+        if (!this.$auth.loggedIn) {
+          //redirect
+          return this.$router.push({
+            name: 'customer-login'
+          })
+        }
+
+        //check customer role
+        if (this.$auth.strategy.name != "customer") {
+          //redirect
+          return this.$router.push({
+            name: 'customer-login'
+          })
+        }
+
+        //dispatch to action "storeWishlist" vuex
+        await this.$store.dispatch('web/wishlist/storeWishlist', {
+            product_id: productId
+          })
+
+          //success add to wishlist
+          .then(() => {
+            //sweet alert
+            this.$swal.fire({
+              title: 'BERHASIL!',
+              text: "Product Berhasil Ditambahkan ke Wishlist!",
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 3000
+            })
+          })
+      },
 
       //method "addToCart"
       async addToCart(productId, price, weight) {
