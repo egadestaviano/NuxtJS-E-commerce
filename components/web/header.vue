@@ -139,6 +139,11 @@
                 <i class="fa fa-tachometer-alt"></i> DASHBOARD
               </nuxt-link>
             </li>
+            <li v-if="$auth.loggedIn && $auth.strategy?.name === 'customer'" class="nav-item">
+              <nuxt-link :to="{ name: 'customer-wishlist' }" class="nav-link">
+                <i class="fa fa-heart"></i> WISHLIST
+              </nuxt-link>
+            </li>
           </ul>
         </div>
       </div>
