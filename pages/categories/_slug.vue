@@ -31,6 +31,15 @@
                   <vue-star-rating :rating="parseFloat(product.reviews_avg_rating)" :increment="0.5" :star-size="20" :read-only="true" :show-rating="false" :inline="true"></vue-star-rating> 
                   (<strong>{{ product.reviews_count }}</strong> ulasan)
                 </client-only>
+                <div class="mt-2">
+                  <button 
+                    v-if="$auth.loggedIn && $auth.strategy.name === 'customer'" 
+                    @click="addToWishlist(product.id)" 
+                    class="btn btn-sm btn-outline-danger"
+                  >
+                    <i class="fa fa-heart"></i> Wishlist
+                  </button>
+                </div>
             </div>
           </div>
         </div>
@@ -84,6 +93,52 @@ export default {
         return this.$store.state.web.category.category
       },
     },
+
+    //methods
+    methods: {
+      formatPrice(value) {
+        if (!value) return '0';
+        return new Intl.NumberFormat('id-ID').format(value);
+      },
+      calculateDiscount(product) {
+        return product.price - (product.price * product.discount) / 100;
+      },
+      //method "addToWishlist"
+      async addToWishlist(productId) {
+        //check loggedIn "false"
+        if (!this.$auth.loggedIn) {
+          //redirect
+          return this.$router.push({
+            name: 'customer-login'
+          })
+        }
+
+        //check customer role
+        if (this.$auth.strategy.name != "customer") {
+          //redirect
+          return this.$router.push({
+            name: 'customer-login'
+          })
+        }
+
+        //dispatch to action "storeWishlist" vuex
+        await this.$store.dispatch('web/wishlist/storeWishlist', {
+            product_id: productId
+          })
+
+          //success add to wishlist
+          .then(() => {
+            //sweet alert
+            this.$swal.fire({
+              title: 'BERHASIL!',
+              text: "Product Berhasil Ditambahkan ke Wishlist!",
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 3000
+            })
+          })
+      },
+    }
 
 }
 </script>
