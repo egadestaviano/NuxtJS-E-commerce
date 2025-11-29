@@ -22,6 +22,15 @@
           </nuxt-link>
         </li>
 
+        <li class="list-group-item" :class="{ active: $route.name === 'customer-wishlist' }">
+          <nuxt-link
+            :to="{ name: 'customer-wishlist' }"
+            class="text-decoration-none text-dark text-uppercase d-block"
+          >
+            <i class="fa fa-heart"></i> Wishlist
+          </nuxt-link>
+        </li>
+
         <li class="list-group-item">
           <a @click="logout" class="text-decoration-none text-dark text-uppercase d-block" style="cursor: pointer;">
             <i class="fa fa-sign-out-alt"></i> Logout
