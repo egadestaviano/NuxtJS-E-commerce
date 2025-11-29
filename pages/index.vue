@@ -69,6 +69,15 @@
                   />
                   (<strong>{{ product.reviews_count }}</strong> ulasan)
                 </client-only>
+                <div class="mt-2">
+                  <button 
+                    v-if="$auth.loggedIn && $auth.strategy.name === 'customer'" 
+                    @click="addToWishlist(product.id)" 
+                    class="btn btn-sm btn-outline-danger"
+                  >
+                    <i class="fa fa-heart"></i> Wishlist
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -127,6 +136,40 @@ export default {
     },
     calculateDiscount(product) {
       return product.price - (product.price * product.discount) / 100;
+    },
+    async addToWishlist(productId) {
+      //check loggedIn "false"
+      if (!this.$auth.loggedIn) {
+        //redirect
+        return this.$router.push({
+          name: 'customer-login'
+        })
+      }
+
+      //check customer role
+      if (this.$auth.strategy.name != "customer") {
+        //redirect
+        return this.$router.push({
+          name: 'customer-login'
+        })
+      }
+
+      //dispatch to action "storeWishlist" vuex
+      await this.$store.dispatch('web/wishlist/storeWishlist', {
+          product_id: productId
+        })
+
+        //success add to wishlist
+        .then(() => {
+          //sweet alert
+          this.$swal.fire({
+            title: 'BERHASIL!',
+            text: "Product Berhasil Ditambahkan ke Wishlist!",
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 3000
+          })
+        })
     },
   },
 }
